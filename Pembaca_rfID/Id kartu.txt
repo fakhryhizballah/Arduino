@@ -1,0 +1,8 @@
+BCA Flash
+201 107 9 236
+
+Kartu Kosong
+104 82 255 41
+
+Gantunagn Kunci
+49 231 158 89

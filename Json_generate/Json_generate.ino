@@ -11,7 +11,7 @@ int Led_OnBoard = 2;
 const char *ssid = "Azimi";             // Your wifi Name
 const char *password = "alhamdulillah"; // Your wifi Password
 
-const char* serverName = "http://apps.spairum.com/mesin/edit/COV0001PNK002";  
+const char *serverName = "https://apps.spairum.com/mesin/edit/COV0001PNK002";
 void setup()
 {
   // put your setup code here, to run once:
@@ -49,36 +49,34 @@ void setup()
 
 void loop()
 {
-   // Allocate JsonBuffer
-    
-//StaticJsonDocument<200> doc;
-DynamicJsonDocument doc(1024);
+  // Allocate JsonBuffer
 
-   // Start a new line
+  //StaticJsonDocument<200> doc;
+  DynamicJsonDocument doc(1024);
+
+  // Start a new line
   Serial.println();
-// serializeJsonPretty(doc, input);
-// JsonObject obj = doc.as<JsonObject>();
-String air, ind, httpRequestData;
-air = 10000;
-ind= 1;
- httpRequestData = "isi=" + air + "&indikator=" + ind;
-   
+  // serializeJsonPretty(doc, input);
+  // JsonObject obj = doc.as<JsonObject>();
+  String air, ind, httpRequestData;
+  air = 10000;
+  ind = 1;
+  httpRequestData = "isi=" + air + "&indikator=" + ind;
 
-  HTTPClient http;    //Declare object of class HTTPClient
- 
-    http.begin(serverName);      //Specify request destination
-     http.addHeader("Content-Type", "application/x-www-form-urlencoded");  //Specify content-type header
- 
-    int httpCode = http.POST(httpRequestData);   //Send the request
-    String payload = http.getString();                                        //Get the response payload
- 
-    Serial.println(httpCode);   //Print HTTP return code
-    Serial.println(payload);    //Print request response payload
- 
-    http.end();  //Close connection
-delay(1500); 
+  HTTPClient http; //Declare object of class HTTPClient
+
+  http.begin(serverName);                                              //Specify request destination
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded"); //Specify content-type header
+
+  int httpCode = http.POST(httpRequestData); //Send the request
+  String payload = http.getString();         //Get the response payload
+
+  Serial.println(httpCode); //Print HTTP return code
+  Serial.println(payload);  //Print request response payload
+
+  http.end(); //Close connection
+  delay(1500);
   digitalWrite(Led_OnBoard, LOW);
   delay(1000);
   digitalWrite(Led_OnBoard, HIGH);
-  
 }

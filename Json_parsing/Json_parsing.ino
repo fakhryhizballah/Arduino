@@ -51,55 +51,57 @@ void setup()
 }
 
 void loop()
-{HTTPClient http;    //Declare object of class HTTPClient
- 
+{
+  HTTPClient http; //Declare object of class HTTPClient
+
   Serial.print("Request Link:");
   Serial.println(host);
-  
-  http.begin(host);     //Specify request destination
-  
-  int httpCode = http.GET();            //Send the request
-  String payload = http.getString();    //Get the response payload from server
- 
+
+  http.begin(host); //Specify request destination
+
+  int httpCode = http.GET();         //Send the request
+  String payload = http.getString(); //Get the response payload from server
+
   Serial.print("Response Code:"); //200 is OK
-  Serial.println(httpCode);   //Print HTTP return code
- 
+  Serial.println(httpCode);       //Print HTTP return code
+
   Serial.print("Returned data from Server:");
-  Serial.println(payload);    //Print request response payload
-  
-  if(httpCode == 200)
+  Serial.println(payload); //Print request response payload
+
+  if (httpCode == 200)
   {
     // Allocate JsonBuffer
     // Use arduinojson.org/assistant to compute the capacity.
     // const size_t capacity = JSON_OBJECT_SIZE(3) + JSON_ARRAY_SIZE(2) + 60;
     DynamicJsonDocument doc(1024);
-  
-   // Parse JSON object
-//    JsonObject& root = jsonBuffer.parseObject(payload);
-//    if (!root.success()) {
-//      Serial.println(F("Parsing failed!"));
-//      return;
-//    }
-auto error = deserializeJson(doc, payload);
-if (error) {
-    Serial.print(F("deserializeJson() failed with code "));
-    Serial.println(error.c_str());
-    return;
-}
-  
+
+    // Parse JSON object
+    //    JsonObject& root = jsonBuffer.parseObject(payload);
+    //    if (!root.success()) {
+    //      Serial.println(F("Parsing failed!"));
+    //      return;
+    //    }
+    auto error = deserializeJson(doc, payload);
+    if (error)
+    {
+      Serial.print(F("deserializeJson() failed with code "));
+      Serial.println(error.c_str());
+      return;
+    }
+
     // Decode JSON/Extract values
     Serial.println(F("Response:"));
-    Serial.println(doc["id"].as<char*>());
-    Serial.println(doc["isi"].as<char*>());
-    Serial.println(doc["indikator"].as<char*>());
-//    Serial.println(doc["data"][1].as<char*>());
+    Serial.println(doc["id"].as<char *>());
+    Serial.println(doc["isi"].as<char *>());
+    Serial.println(doc["indikator"].as<char *>());
+    //    Serial.println(doc["data"][1].as<char*>());
   }
   else
   {
     Serial.println("Error in response");
   }
- 
-  http.end();  //Close connection
-  
-  delay(5000);  //GET Data at every 5 seconds
+
+  http.end(); //Close connection
+
+  delay(5000); //GET Data at every 5 seconds
 }

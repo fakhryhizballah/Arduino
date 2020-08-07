@@ -8,11 +8,11 @@
 int Led_OnBoard = 2;
 // Wifi config
 
-const char* ssid = "Azimi";             // Your wifi Name
-const char* password = "alhamdulillah"; // Your wifi Password
+const char *ssid = "Azimi";             // Your wifi Name
+const char *password = "alhamdulillah"; // Your wifi Password
 
-const char* serverName = "http://apps.spairum.com/mesin/edit/COV0002PNK003";
-const char* serverGet = "http://apps.spairum.com/Mesin/detail/COV0002PNK003";
+const char *serverName = "https://apps.spairum.com/mesin/edit/COV0002PNK003";
+const char *serverGet = "https://apps.spairum.com/Mesin/detail/COV0002PNK003";
 
 void setup()
 {
@@ -55,7 +55,7 @@ void loop()
   // Allocate JsonBuffer
 
   //StaticJsonDocument<200> doc;
-//  DynamicJsonDocument doc(1024);
+  //  DynamicJsonDocument doc(1024);
 
   // Start a new line
   Serial.println();
@@ -84,12 +84,11 @@ void loop()
   HTTPClient client;
   client.begin(serverGet);
   int httpCode2 = client.GET();
-  if (httpCode2 > 0){
+  if (httpCode2 > 0)
+  {
     String payload2 = client.getString();
     Serial.println("\nStatuscode: " + String(httpCode2));
     Serial.println(payload2);
-    }
-   client.end();
-      
-  
+  }
+  client.end();
 }

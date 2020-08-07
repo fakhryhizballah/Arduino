@@ -11,8 +11,8 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <DNSServer.h>
-#include <WiFiManager.h> 
- 
+#include <WiFiManager.h>
+
 Adafruit_ADS1115 ads;
 
 SoftwareSerial linkSerial(D6, D5); // (Rx, Tx)
@@ -22,7 +22,6 @@ int Led_OnBoard = 2;
 int data1;
 int data2;
 int y = 5;
-
 
 // GPIO where the DS18B20 is connected to
 const int oneWireBus = 15;
@@ -37,7 +36,7 @@ DallasTemperature sensors(&oneWire);
 
 //const char *ssid = "SpairumNet";             // Your wifi Name
 //const char *password = "12341234"; // Your wifi Password
-const char *host = "103.253.212.155";   //Your pc or server (database) IP, example : 192.168.0.0 , if you are a windows os user, open cmd, then type ipconfig then look at IPv4 Address.
+const char *host = "103.253.212.155"; //Your pc or server (database) IP, example : 192.168.0.0 , if you are a windows os user, open cmd, then type ipconfig then look at IPv4 Address.
 
 void setup()
 {
@@ -48,19 +47,19 @@ void setup()
   Serial.begin(115200);
   sensors.begin();
   linkSerial.begin(115200);
-  //ads.setGain(GAIN_TWO); 
+  //ads.setGain(GAIN_TWO);
   ads.begin();
 
-   WiFiManager wifiManager;
+  WiFiManager wifiManager;
   wifiManager.autoConnect("AutoConnectAP");
   Serial.println("connected...yeey :)");
-  
-//  while (!Serial) continue;
-//  WiFi.mode(WIFI_OFF); //Prevents reconnection issue (taking too long to connect)
-//  delay(1000);
-//  WiFi.mode(WIFI_STA); //This line hides the viewing of ESP as wifi hotspot
-//  WiFi.begin(ssid, password);
-//  Serial.println("Connecting");
+
+  //  while (!Serial) continue;
+  //  WiFi.mode(WIFI_OFF); //Prevents reconnection issue (taking too long to connect)
+  //  delay(1000);
+  //  WiFi.mode(WIFI_STA); //This line hides the viewing of ESP as wifi hotspot
+  //  WiFi.begin(ssid, password);
+  //  Serial.println("Connecting");
 
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -89,33 +88,34 @@ void loop()
   Serial.println("ºC");
 
   int16_t adc0, adc1;
- 
- adc0 = ads.readADC_SingleEnded(0);
- adc1 = ads.readADC_SingleEnded(1);
-int ldr = analogRead(0);
-Serial.print("LDR 1: ");
-Serial.println(ldr);
+
+  adc0 = ads.readADC_SingleEnded(0);
+  adc1 = ads.readADC_SingleEnded(1);
+  int ldr = analogRead(0);
+  Serial.print("LDR 1: ");
+  Serial.println(ldr);
   Serial.print("LDR: ");
   Serial.print(adc0);
   Serial.println(" lux");
   Serial.print("Turbidity: ");
   Serial.println(adc1);
 
-  if (linkSerial.available()){
+  if (linkSerial.available())
+  {
     // This one must be bigger than for the sender because it must store the strings
     StaticJsonDocument<300> doc;
     DeserializationError err = deserializeJson(doc, linkSerial);
-    if (err == DeserializationError::Ok) 
+    if (err == DeserializationError::Ok)
     {
       // Print the values
       // (we must use as<T>() to resolve the ambiguity)
       Serial.print("Flow rate: ");
-      data1=doc["flowR"];
+      data1 = doc["flowR"];
       Serial.print(data1);
       Serial.print("L/min");
       Serial.print("\t");
       Serial.print("Output Liquid Quantity: ");
-      data2=doc["data2"];
+      data2 = doc["data2"];
       Serial.print(data2);
       Serial.println("mL");
       /**
@@ -124,19 +124,18 @@ Serial.println(ldr);
       Serial.print("value = ");
       Serial.println(doc["value"].as<int>());
         **/
-    } 
-    else 
+    }
+    else
     {
       // Print error to the "debug" serial port
       Serial.print("deserializeJson() returned ");
       Serial.println(err.c_str());
-  
+
       // Flush all bytes in the "link" serial port buffer
       while (linkSerial.available() > 0)
         linkSerial.read();
-      
     }
-   }
+  }
   /**
   Serial.print("Flow rate: ");
   int data1=root["flowR"];
@@ -150,8 +149,6 @@ Serial.println(ldr);
   **/
 
   HTTPClient http; //Declare object of class HTTPClient
-
-
 
   String TempValueSend, postData, Debit, LDR, TurbidityVaule;
 

@@ -38,7 +38,7 @@ void setup()
 void loop()
 {
   digitalWrite(statusLed, LOW);
-   if((millis() - oldTime) > 1000)    // Only process counters once per second
+  if ((millis() - oldTime) > 1000) // Only process counters once per second
   {
     detachInterrupt(sensorInterrupt);
     flowRate = ((1000.0 / (millis() - oldTime)) * pulseCount) / calibrationFactor;
@@ -47,25 +47,23 @@ void loop()
     totalMilliLitres += flowMilliLitres;
     unsigned int frac;
     Serial.print("Flow rate: ");
-    Serial.print(int(flowRate));  // Print the integer part of the variable
+    Serial.print(int(flowRate)); // Print the integer part of the variable
     Serial.print("L/min");
-    Serial.print("\t");       // Print tab space
+    Serial.print("\t"); // Print tab space
     // Print the cumulative total of litres flowed since starting
     Serial.print("Output Liquid Quantity: ");
     Serial.print(totalMilliLitres);
     Serial.println("mL");
-    Serial.print("\t");       // Print tab space
-    Serial.print(totalMilliLitres/1000);
+    Serial.print("\t"); // Print tab space
+    Serial.print(totalMilliLitres / 1000);
     Serial.print("L");
 
     StaticJsonDocument<200> doc;
-  doc["flowR"] = flowRate;
-  doc["totalML"] = totalMilliLitres;
+    doc["flowR"] = flowRate;
+    doc["totalML"] = totalMilliLitres;
 
-  // Send the JSON document over the "link" serial port
-  serializeJson(doc, s);
-
-   
+    // Send the JSON document over the "link" serial port
+    serializeJson(doc, s);
 
     // Reset the pulse counter so we can start incrementing again
     pulseCount = 0;

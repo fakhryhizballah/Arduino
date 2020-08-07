@@ -11,8 +11,8 @@ int Led_OnBoard = 2;
 const char *ssid = "Azimi";             // Your wifi Name
 const char *password = "alhamdulillah"; // Your wifi Password
 
-const char *serverName = "https://apps.spairum.com/mesin/edit/COV0002PNK003";
-const char *serverGet = "https://apps.spairum.com/Mesin/detail/COV0002PNK003";
+const char *serverName = "http://apps.spairum.com/mesin/edit/COV0002PNK003";
+const char *serverGet = "http://apps.spairum.com/Mesin/detail/COV0002PNK003";
 
 void setup()
 {

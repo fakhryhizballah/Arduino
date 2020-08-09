@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include <ArduinoJson.h>
-SoftwareSerial s(5, 6);
+SoftwareSerial s(5, 6); // (Rx, Tx)
 
 byte statusLed = 13;
 byte sensorInterrupt = 0; // 0 = digital pin 2

@@ -10,10 +10,10 @@
 int Led_OnBoard = 2;
 // Wifi config
 
-const char* ssid = "Azimi";             // Your wifi Name
-const char* password = "alhamdulillah"; // Your wifi Password
+const char *ssid = "Azimi";             // Your wifi Name
+const char *password = "alhamdulillah"; // Your wifi Password
 
-const char* host = "http://apps.spairum.com/Mesin/detail/COV0002PNK003";
+const char *host = "http://apps.spairum.com/Mesin/detail/COV0002PNK003";
 
 void setup()
 {
@@ -91,9 +91,9 @@ void loop()
 
     // Decode JSON/Extract values
     Serial.println(F("Response:"));
-    Serial.println(doc["id"].as<char* >());
-    Serial.println(doc["isi"].as<char* >());
-    Serial.println(doc["indikator"].as<char* >());
+    Serial.println(doc["id"].as<char *>());
+    Serial.println(doc["isi"].as<char *>());
+    Serial.println(doc["indikator"].as<char *>());
     //    Serial.println(doc["data"][1].as<char* >());
   }
   else

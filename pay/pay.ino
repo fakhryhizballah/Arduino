@@ -13,9 +13,11 @@
 
 int Led_OnBoard = 2;
 // Wifi config
-const char *host = "http://pay.spairum.com/ReaderAPI/status/ReaderPro2";
-const char *addCard = "http://pay.spairum.com/ReaderAPI/addCard/ReaderPro2";
+const char *host = "http://apipays.spairum.com/ReaderAPI/status/ReaderPro";
+const char *addCard = "http://apipays.spairum.com/ReaderAPI/addCard/ReaderPro";
+const char *card = "http://apipays.spairum.com/CardAPI";
 const int httpsPort = 443;
+
 
 void setup()
 {
@@ -41,16 +43,15 @@ void loop()
     String payload = http.getString(); //Get the request response payload
     Serial.println(payload);           //Print the response payload
   }
-
+  Serial.println("httpCode status=");
+  Serial.print(httpCode);
   http.end();
-  delay(1000);
-  digitalWrite(Led_OnBoard, LOW);
-  delay(1000);
-  digitalWrite(Led_OnBoard, HIGH);
 
   String httpRequestData, data;
   const char *id = "Mycard";
-  data = id;
+  int i = 1;
+  i = 1+ i++;
+  data = i;
   httpRequestData = "ID_Card=" + data;
 
   HTTPClient AddClient;
@@ -61,11 +62,34 @@ void loop()
   int httpHit = AddClient.POST(httpRequestData); //Send the request
   String payloadHit = AddClient.getString();     //Get the response payloadHit
 
-  Serial.println(httpHit);    //Print HTTP return code
-  Serial.println(payloadHit); //Print request response payloadHit
+  // Serial.println(httpHit);    //Print HTTP return code
+  if (httpHit > 0)
+  { //Check the returning code
+
+    String payloadHit = http.getString(); //Get the request response payload
+    Serial.println(payloadHit);           //Print the response payload
+  }
+ // Serial.println(payloadHit); //Print request response payloadHit
+  Serial.println("httpCode add=");
+  Serial.print(httpHit);
   AddClient.end();            //Cl
-  delay(1000);
+  
+   HTTPClient httpCard;
+  httpCard.begin(card);
+  int httpCode1 = http.GET();
+  String payload1 = http.getString();
+  if (httpCode1 > 0)
+  { //Check the returning code
+
+    String payload1 = httpCard.getString(); //Get the request response payload
+    Serial.println(payload1);           //Print the response payload
+  }
+  Serial.println("httpCode card=");
+  Serial.print(httpCode);
+
+  http.end();
+  delay(100);
   digitalWrite(Led_OnBoard, LOW);
-  delay(1000);
+  delay(500);
   digitalWrite(Led_OnBoard, HIGH);
 }

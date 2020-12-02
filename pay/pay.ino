@@ -17,7 +17,7 @@ const char *host = "http://apipays.spairum.com/ReaderAPI/status/ReaderPro";
 const char *addCard = "http://apipays.spairum.com/ReaderAPI/addCard/ReaderPro";
 const char *card = "http://apipays.spairum.com/CardAPI";
 const int httpsPort = 443;
-
+int i = 1;
 
 void setup()
 {
@@ -26,6 +26,7 @@ void setup()
 
   Serial.begin(115200);
   WiFiManager wifiManager;
+  // wifiManager.autoConnect("AP-NAME", "AP-PASSWORD");
   wifiManager.autoConnect("Spairum NET");
   Serial.println("connected...yeey :)");
   Serial.println("Connecting");
@@ -46,11 +47,11 @@ void loop()
   Serial.println("httpCode status=");
   Serial.print(httpCode);
   http.end();
-
-  String httpRequestData, data;
+  String httpRequestData,
+      data;
   const char *id = "Mycard";
-  int i = 1;
-  i = 1+ i++;
+  
+  i = 1 + i++;
   data = i;
   httpRequestData = "ID_Card=" + data;
 
@@ -69,12 +70,12 @@ void loop()
     String payloadHit = http.getString(); //Get the request response payload
     Serial.println(payloadHit);           //Print the response payload
   }
- // Serial.println(payloadHit); //Print request response payloadHit
+  // Serial.println(payloadHit); //Print request response payloadHit
   Serial.println("httpCode add=");
   Serial.print(httpHit);
-  AddClient.end();            //Cl
-  
-   HTTPClient httpCard;
+  AddClient.end(); //Cl
+
+  HTTPClient httpCard;
   httpCard.begin(card);
   int httpCode1 = http.GET();
   String payload1 = http.getString();
@@ -82,7 +83,7 @@ void loop()
   { //Check the returning code
 
     String payload1 = httpCard.getString(); //Get the request response payload
-    Serial.println(payload1);           //Print the response payload
+    Serial.println(payload1);               //Print the response payload
   }
   Serial.println("httpCode card=");
   Serial.print(httpCode);

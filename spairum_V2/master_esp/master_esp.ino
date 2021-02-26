@@ -12,24 +12,19 @@
 #include <Wire.h>
 
 int Led_OnBoard = 2;
-// Wifi config
-
-const char *ssid = "Azimi";             // Your wifi Name
-const char *password = "alhamdulillah"; // Your wifi Password
-
-const char *serverPost = "http://apps.spairum.com/transfer/post/COV0002PNK003";
-const char *serverGet = "http://apps.spairum.com/transfer/get/COV0002PNK003";
-const char *serverPostMesin = "http://apps.spairum.com/mesin/edit/COV0002PNK003";
+const char *serverPost = "http://app.spairum.my.id/transfer/post/proto";
+const char *serverGet = "http://app.spairum.my.id/transfer/get/proto";
+const char *serverPostMesin = "http://app.spairum.my.id/mesin/edit/proto";
 
 SoftwareSerial linkSerial(D6, D5); // (Rx, Tx)
 
 int data1;
-#include "HX711.h"
-
-HX711 scale(D1, D2);              //DOUT, CLK
-float calibration_factor = 88; // this calibration factor is adjusted according to my load cell
-float GRAM;
-float KG;
+////#include "HX711.h"
+//
+//HX711 scale(D1, D2);              //DOUT, CLK
+//float calibration_factor = 88; // this calibration factor is adjusted according to my load cell
+//float GRAM;
+//float KG;
 
 void setup()
 {
@@ -41,27 +36,26 @@ void setup()
     Serial.begin(115200);
     linkSerial.begin(115200);
 
-    while (!Serial)
-        continue;
-    WiFi.mode(WIFI_OFF); //Prevents reconnection issue (taking too long to connect)
-    delay(1000);
-    WiFi.mode(WIFI_STA); //This line hides the viewing of ESP as wifi hotspot
-    WiFi.begin(ssid, password);
+//    while (!Serial)
+//        continue;
+//    WiFi.mode(WIFI_OFF); //Prevents reconnection issue (taking too long to connect)
+//    delay(1000);
+//    WiFi.mode(WIFI_STA); //This line hides the viewing of ESP as wifi hotspot
+//    WiFi.begin(ssid, password);
 //
-//WiFiManager wifiManager;
-//  wifiManager.autoConnect("Spairum DWS");
-//  Serial.println("connected...yeey :)"); 
-
+    WiFiManager wifiManager;
+    wifiManager.autoConnect("Spairum DWS");
+    Serial.println("connected...yeey :)"); 
     Serial.println("Connecting");
 
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        digitalWrite(Led_OnBoard, LOW);
-        delay(250);
-        Serial.print(".");
-        digitalWrite(Led_OnBoard, HIGH);
-        delay(500);
-    }
+//    while (WiFi.status() != WL_CONNECTED)
+//    {
+//        digitalWrite(Led_OnBoard, LOW);
+//        delay(250);
+//        Serial.print(".");
+//        digitalWrite(Led_OnBoard, HIGH);
+//        delay(500);
+//    }
 
     Serial.println("");
     Serial.print("Connected to WiFi network with IP Address: ");

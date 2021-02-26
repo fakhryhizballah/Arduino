@@ -2,7 +2,7 @@
 #include <LCD.h>
 
 #include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C  lcd(0x27,2,1,0,4,5,6,7); 
+LiquidCrystal_I2C  lcd(0x3F,2,1,0,4,5,6,7); 
 
 const int sensorIn = A0;
 int mVperAmp = 66; // use 100 for 20A Module and 66 for 30A Module

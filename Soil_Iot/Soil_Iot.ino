@@ -22,7 +22,7 @@ void setup()
     pinMode(Led_OnBoard, OUTPUT);
   Serial.begin(115200);
   WiFiManager wifiManager;
-  wifiManager.autoConnect("PH-111", "12345678");
+  wifiManager.autoConnect("PH-111");
   Serial.println("connected...yeey :)");
   Serial.println("Connecting");
   digitalWrite(Led_OnBoard, HIGH);

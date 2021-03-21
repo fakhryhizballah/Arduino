@@ -11,7 +11,7 @@
 #include <LCD.h>
 #include <Arduino_JSON.h>
 
-const char *host = "http://api.openweathermap.org/data/2.5/onecall?lat=-0.0333&lon=109.3333&exclude=hourly,daily&appid=d09d65ed123bb55a3a6fc0d22eb73c22";
+const char *host = "http://api.openweathermap.org/data/2.5/onecall?lat=-0.0398506&lon=109.2973554&exclude=hourly,daily&appid=d09d65ed123bb55a3a6fc0d22eb73c22";
 
 
 const int dry = 595; // value for dry sensor

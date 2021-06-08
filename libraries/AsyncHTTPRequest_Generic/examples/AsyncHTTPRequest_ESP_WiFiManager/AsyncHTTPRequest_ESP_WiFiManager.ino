@@ -17,7 +17,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
   You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.  
  
-  Version: 1.1.1
+  Version: 1.2.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -26,6 +26,11 @@
   1.0.2    K Hoang     09/11/2020 Make Mutex Lock and delete more reliable and error-proof
   1.1.0    K Hoang     23/12/2020 Add HTTP PUT, PATCH, DELETE and HEAD methods
   1.1.1    K Hoang     24/12/2020 Prevent crash if request and/or method not correct.
+  1.1.2    K Hoang     11/02/2021 Rename _lock and _unlock to avoid conflict with AsyncWebServer library
+  1.1.3    K Hoang     25/02/2021 Fix non-persistent Connection header bug
+  1.1.4    K Hoang     21/03/2021 Fix `library.properties` dependency
+  1.1.5    K Hoang     22/03/2021 Fix dependency on STM32AsyncTCP Library
+  1.2.0    K Hoang     11/04/2021 Add support to LAN8720 using STM32F4 or STM32F7
  *****************************************************************************************************************************/
 //************************************************************************************************************
 //
@@ -58,10 +63,12 @@
 
 // Level from 0-4
 #define ASYNC_HTTP_DEBUG_PORT     Serial
-#define _ASYNC_HTTP_LOGLEVEL_     1    
 
-// 300s = 5 minutes to not flooding, 10s in testing
-#define HTTP_REQUEST_INTERVAL     10  //300
+#define _ASYNC_HTTP_LOGLEVEL_     1
+#define _WIFIMGR_LOGLEVEL_        1
+
+// 300s = 5 minutes to not flooding, 60s in testing
+#define HTTP_REQUEST_INTERVAL     60  //300
 
 //Ported to ESP32
 #ifdef ESP32
@@ -73,9 +80,22 @@
   #include <WiFiMulti.h>
   WiFiMulti wifiMulti;
 
-  #define USE_SPIFFS      true
+  // LittleFS has higher priority than SPIFFS
+  #define USE_LITTLEFS    true
+  #define USE_SPIFFS      false
 
-  #if USE_SPIFFS
+  #if USE_LITTLEFS
+    // Use LittleFS
+    #include "FS.h"
+
+    // The library will be depreciated after being merged to future major Arduino esp32 core release 2.x
+    // At that time, just remove this library inclusion
+    #include <LITTLEFS.h>             // https://github.com/lorol/LITTLEFS
+    
+    FS* filesystem =      &LITTLEFS;
+    #define FileFS        LITTLEFS
+    #define FS_Name       "LittleFS"
+  #elif USE_SPIFFS
     #include <SPIFFS.h>
     FS* filesystem =      &SPIFFS;
     #define FileFS        SPIFFS
@@ -314,14 +334,20 @@ void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig)
 uint8_t connectMultiWiFi()
 {
 #if ESP32
-  // For ESP32, this better be 0 to shorten the connect time
-  #define WIFI_MULTI_1ST_CONNECT_WAITING_MS       0
+  // For ESP32, this better be 0 to shorten the connect time. 
+  // For ESP32-S2, must be > 500
+  #if ( ARDUINO_ESP32S2_DEV || ARDUINO_FEATHERS2 || ARDUINO_PROS2 || ARDUINO_MICROS2 )
+    #define WIFI_MULTI_1ST_CONNECT_WAITING_MS           500L
+  #else
+    // For ESP32 core v1.0.6, must be >= 500
+    #define WIFI_MULTI_1ST_CONNECT_WAITING_MS           800L
+  #endif
 #else
   // For ESP8266, this better be 2200 to enable connect the 1st time
-  #define WIFI_MULTI_1ST_CONNECT_WAITING_MS       2200L
+  #define WIFI_MULTI_1ST_CONNECT_WAITING_MS             2200L
 #endif
 
-#define WIFI_MULTI_CONNECT_WAITING_MS           100L
+#define WIFI_MULTI_CONNECT_WAITING_MS                   100L
   
   uint8_t status;
 
@@ -353,6 +379,7 @@ uint8_t connectMultiWiFi()
 
   int i = 0;
   status = wifiMulti.run();
+
   delay(WIFI_MULTI_1ST_CONNECT_WAITING_MS);
 
   while ( ( i++ < 20 ) && ( status != WL_CONNECTED ) )
@@ -514,6 +541,8 @@ void sendRequest()
 
 void requestCB(void* optParm, AsyncHTTPRequest* request, int readyState) 
 {
+  (void) optParm;
+  
   if (readyState == readyStateDone) 
   {
     Serial.println("\n**************************************");

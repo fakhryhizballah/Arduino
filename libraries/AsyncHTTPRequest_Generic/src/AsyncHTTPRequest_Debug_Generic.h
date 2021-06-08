@@ -17,7 +17,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
   You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.  
  
-  Version: 1.1.1
+  Version: 1.2.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -26,9 +26,17 @@
   1.0.2    K Hoang     09/11/2020 Make Mutex Lock and delete more reliable and error-proof
   1.1.0    K Hoang     23/12/2020 Add HTTP PUT, PATCH, DELETE and HEAD methods
   1.1.1    K Hoang     24/12/2020 Prevent crash if request and/or method not correct.
+  1.1.2    K Hoang     11/02/2021 Rename _lock and _unlock to avoid conflict with AsyncWebServer library
+  1.1.3    K Hoang     25/02/2021 Fix non-persistent Connection header bug
+  1.1.4    K Hoang     21/03/2021 Fix `library.properties` dependency
+  1.1.5    K Hoang     22/03/2021 Fix dependency on STM32AsyncTCP Library
+  1.2.0    K Hoang     11/04/2021 Add support to LAN8720 using STM32F4 or STM32F7
  *****************************************************************************************************************************/
 
 #pragma once
+
+#ifndef ASYNC_HTTP_REQUEST_DEBUG_GENERIC_H
+#define ASYNC_HTTP_REQUEST_DEBUG_GENERIC_H
 
 #ifdef ASYNC_HTTP_DEBUG_PORT
   #define A_DBG_PORT      ASYNC_HTTP_DEBUG_PORT
@@ -47,27 +55,49 @@
   #define _ASYNC_HTTP_LOGLEVEL_       0
 #endif
 
-#define AHTTP_LOGERROR(x)         if(_ASYNC_HTTP_LOGLEVEL_>0) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.println(x); }
-#define AHTTP_LOGERROR0(x)        if(_ASYNC_HTTP_LOGLEVEL_>0) { A_DBG_PORT.print(x); }
-#define AHTTP_LOGERROR1(x,y)      if(_ASYNC_HTTP_LOGLEVEL_>0) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.println(y); }
-#define AHTTP_LOGERROR2(x,y,z)    if(_ASYNC_HTTP_LOGLEVEL_>0) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.print(y); A_DBG_PORT.print(" "); A_DBG_PORT.println(z); }
-#define AHTTP_LOGERROR3(x,y,z,w)  if(_ASYNC_HTTP_LOGLEVEL_>0) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.print(y); A_DBG_PORT.print(" "); A_DBG_PORT.print(z); A_DBG_PORT.print(" "); A_DBG_PORT.println(w); }
+/////////////////////////////////////////////////////////
 
-#define AHTTP_LOGWARN(x)          if(_ASYNC_HTTP_LOGLEVEL_>1) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.println(x); }
-#define AHTTP_LOGWARN0(x)         if(_ASYNC_HTTP_LOGLEVEL_>1) { A_DBG_PORT.print(x); }
-#define AHTTP_LOGWARN1(x,y)       if(_ASYNC_HTTP_LOGLEVEL_>1) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.println(y); }
-#define AHTTP_LOGWARN2(x,y,z)     if(_ASYNC_HTTP_LOGLEVEL_>1) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.print(y); A_DBG_PORT.print(" "); A_DBG_PORT.println(z); }
-#define AHTTP_LOGWARN3(x,y,z,w)   if(_ASYNC_HTTP_LOGLEVEL_>1) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.print(y); A_DBG_PORT.print(" "); A_DBG_PORT.print(z); A_DBG_PORT.print(" "); A_DBG_PORT.println(w); }
+const char AHTTP_MARK[] = "[AHTTP] ";
 
-#define AHTTP_LOGINFO(x)          if(_ASYNC_HTTP_LOGLEVEL_>2) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.println(x); }
-#define AHTTP_LOGINFO0(x)         if(_ASYNC_HTTP_LOGLEVEL_>2) { A_DBG_PORT.print(x); }
-#define AHTTP_LOGINFO1(x,y)       if(_ASYNC_HTTP_LOGLEVEL_>2) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.println(y); }
-#define AHTTP_LOGINFO2(x,y,z)     if(_ASYNC_HTTP_LOGLEVEL_>2) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.print(y); A_DBG_PORT.print(" "); A_DBG_PORT.println(z); }
-#define AHTTP_LOGINFO3(x,y,z,w)   if(_ASYNC_HTTP_LOGLEVEL_>2) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.print(y); A_DBG_PORT.print(" "); A_DBG_PORT.print(z); A_DBG_PORT.print(" "); A_DBG_PORT.println(w); }
+#define AHTTP_PRINT_MARK   AHTTP_PRINT(AHTTP_MARK)
+#define AHTTP_PRINT_SP     A_DBG_PORT.print(" ")
 
-#define AHTTP_LOGDEBUG(x)         if(_ASYNC_HTTP_LOGLEVEL_>3) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.println(x); }
-#define AHTTP_LOGDEBUG0(x)        if(_ASYNC_HTTP_LOGLEVEL_>3) { A_DBG_PORT.print(x); }
-#define AHTTP_LOGDEBUG1(x,y)      if(_ASYNC_HTTP_LOGLEVEL_>3) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.println(y); }
-#define AHTTP_LOGDEBUG2(x,y,z)    if(_ASYNC_HTTP_LOGLEVEL_>3) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.print(y); A_DBG_PORT.print(" "); A_DBG_PORT.println(z); }
-#define AHTTP_LOGDEBUG3(x,y,z,w)  if(_ASYNC_HTTP_LOGLEVEL_>3) { A_DBG_PORT.print("[AHTTP] "); A_DBG_PORT.print(x); A_DBG_PORT.print(" "); A_DBG_PORT.print(y); A_DBG_PORT.print(" "); A_DBG_PORT.print(z); A_DBG_PORT.print(" "); A_DBG_PORT.println(w); }
+#define AHTTP_PRINT        A_DBG_PORT.print
+#define AHTTP_PRINTLN      A_DBG_PORT.println
+
+/////////////////////////////////////////////////////////
+
+#define AHTTP_LOGERROR(x)         if(_ASYNC_HTTP_LOGLEVEL_>0) { AHTTP_PRINT_MARK; AHTTP_PRINTLN(x); }
+#define AHTTP_LOGERROR0(x)        if(_ASYNC_HTTP_LOGLEVEL_>0) { AHTTP_PRINT(x); }
+#define AHTTP_LOGERROR1(x,y)      if(_ASYNC_HTTP_LOGLEVEL_>0) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINTLN(y); }
+#define AHTTP_LOGERROR2(x,y,z)    if(_ASYNC_HTTP_LOGLEVEL_>0) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINT(y); AHTTP_PRINT_SP; AHTTP_PRINTLN(z); }
+#define AHTTP_LOGERROR3(x,y,z,w)  if(_ASYNC_HTTP_LOGLEVEL_>0) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINT(y); AHTTP_PRINT_SP; AHTTP_PRINT(z); AHTTP_PRINT_SP; AHTTP_PRINTLN(w); }
+
+/////////////////////////////////////////////////////////
+
+#define AHTTP_LOGWARN(x)          if(_ASYNC_HTTP_LOGLEVEL_>1) { AHTTP_PRINT_MARK; AHTTP_PRINTLN(x); }
+#define AHTTP_LOGWARN0(x)         if(_ASYNC_HTTP_LOGLEVEL_>1) { AHTTP_PRINT(x); }
+#define AHTTP_LOGWARN1(x,y)       if(_ASYNC_HTTP_LOGLEVEL_>1) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINTLN(y); }
+#define AHTTP_LOGWARN2(x,y,z)     if(_ASYNC_HTTP_LOGLEVEL_>1) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINT(y); AHTTP_PRINT_SP; AHTTP_PRINTLN(z); }
+#define AHTTP_LOGWARN3(x,y,z,w)   if(_ASYNC_HTTP_LOGLEVEL_>1) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINT(y); AHTTP_PRINT_SP; AHTTP_PRINT(z); AHTTP_PRINT_SP; AHTTP_PRINTLN(w); }
+
+/////////////////////////////////////////////////////////
+
+#define AHTTP_LOGINFO(x)          if(_ASYNC_HTTP_LOGLEVEL_>2) { AHTTP_PRINT_MARK; AHTTP_PRINTLN(x); }
+#define AHTTP_LOGINFO0(x)         if(_ASYNC_HTTP_LOGLEVEL_>2) { AHTTP_PRINT(x); }
+#define AHTTP_LOGINFO1(x,y)       if(_ASYNC_HTTP_LOGLEVEL_>2) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINTLN(y); }
+#define AHTTP_LOGINFO2(x,y,z)     if(_ASYNC_HTTP_LOGLEVEL_>2) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINT(y); AHTTP_PRINT_SP; AHTTP_PRINTLN(z); }
+#define AHTTP_LOGINFO3(x,y,z,w)   if(_ASYNC_HTTP_LOGLEVEL_>2) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINT(y); AHTTP_PRINT_SP; AHTTP_PRINT(z); AHTTP_PRINT_SP; AHTTP_PRINTLN(w); }
+
+/////////////////////////////////////////////////////////
+
+#define AHTTP_LOGDEBUG(x)         if(_ASYNC_HTTP_LOGLEVEL_>3) { AHTTP_PRINT_MARK; AHTTP_PRINTLN(x); }
+#define AHTTP_LOGDEBUG0(x)        if(_ASYNC_HTTP_LOGLEVEL_>3) { AHTTP_PRINT(x); }
+#define AHTTP_LOGDEBUG1(x,y)      if(_ASYNC_HTTP_LOGLEVEL_>3) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINTLN(y); }
+#define AHTTP_LOGDEBUG2(x,y,z)    if(_ASYNC_HTTP_LOGLEVEL_>3) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINT(y); AHTTP_PRINT_SP; AHTTP_PRINTLN(z); }
+#define AHTTP_LOGDEBUG3(x,y,z,w)  if(_ASYNC_HTTP_LOGLEVEL_>3) { AHTTP_PRINT_MARK; AHTTP_PRINT(x); AHTTP_PRINT_SP; AHTTP_PRINT(y); AHTTP_PRINT_SP; AHTTP_PRINT(z); AHTTP_PRINT_SP; AHTTP_PRINTLN(w); }
+
+/////////////////////////////////////////////////////////
+
+#endif    // ASYNC_HTTP_REQUEST_DEBUG_GENERIC_H
 
